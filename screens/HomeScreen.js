@@ -186,6 +186,12 @@ const HomeScreen = () => {
                 customMapStyle={mapStyle}
                 showsUserLocation
                 followsUserLocation
+                initialRegion={{
+                  latitude: 41.327572,
+                  longitude: 19.819281,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
                 // showsTraffic
               >
                 {carsAround.map((marker, index) => (
