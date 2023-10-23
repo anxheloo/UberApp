@@ -8,16 +8,55 @@ import {
   Image,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { colors, parameters, title } from "../global/styles";
 // import { Icon } from "react-native-elements";
 import { Feather } from "@expo/vector-icons";
-import { filterData } from "../global/data";
+import { filterData, carsAround } from "../global/data";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import { mapStyle } from "../global/mapStyle";
+import * as Location from "expo-location";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const HomeScreen = () => {
+  const _map = useRef(1);
+  const [userLocation, setUserLocation] = useState(null);
+  const [lat, setLat] = useState([]);
+  const [lon, setLon] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync({
+        // title: "Are you sure?",
+      });
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync();
+
+      setUserLocation(location);
+      setLat(location.coords.latitude);
+      setLon(location.coords.longitude);
+      console.log("1-THIS IS USER location: ", userLocation);
+      console.log("1-THIS IS USER location: ", location);
+      // console.log("1-THIS IS lon: ", userLocation.coords.longitude);
+      // console.log("1-THIS IS lat: ", userLocation.coords.latitude);
+      // console.log("2-THIS IS lon: ", lon);
+      // console.log("2-THIS IS lat: ", lat);
+      // console.log("3-THIS IS USER location: ", location);
+      console.log("3-THIS IS lon: ", location.coords.longitude);
+      console.log("3-THIS IS lat: ", location.coords.latitude);
+    })();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -57,13 +96,14 @@ const HomeScreen = () => {
             <Image source={require("../assets/uberCar.png")}></Image>
           </View>
         </View>
+
         <View style={{ alignItems: "center" }}>
           <FlatList
             data={filterData}
             keyExtractor={(item) => item.id}
-            numColumns={4}
+            numRows={4}
             // numRows={4}
-            // horizontal={true}
+            horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
               <View style={styles.card}>
@@ -78,7 +118,92 @@ const HomeScreen = () => {
           ></FlatList>
         </View>
 
-        {/* Here we left, after icons */}
+        <View style={styles.view3}>
+          <Text style={{ paddingHorizontal: 10 }}> Where to ?</Text>
+          <View style={styles.view4}>
+            <AntDesign name="clockcircle" size={24} color={colors.grey1} />
+            <Text style={{ paddingHorizontal: 7 }}> Now</Text>
+            <Entypo name="chevron-small-down" size={24} color="black" />
+          </View>
+        </View>
+
+        <View>
+          <View style={styles.view5}>
+            <View style={styles.view7}>
+              <Entypo name="location-pin" size={24} color="black" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 18, color: colors.black }}>
+                Rruga Shefqet Musaraj
+              </Text>
+              <Text style={{ color: colors.grey3 }}>Big Market, 1005</Text>
+            </View>
+            <View>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={28}
+                color={colors.grey3}
+              />
+            </View>
+          </View>
+
+          <View style={{ ...styles.view5, borderBottomWidth: 0 }}>
+            <View style={styles.view7}>
+              <Entypo name="location-pin" size={24} color="black" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 18, color: colors.black }}>
+                Rruga Sali Butka
+              </Text>
+              <Text style={{ color: colors.grey3 }}>
+                Chilli Snack Bar, 1005
+              </Text>
+            </View>
+            <View style={{}}>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={28}
+                color={colors.grey3}
+              />
+            </View>
+          </View>
+        </View>
+
+        {!errorMsg ? (
+          <View>
+            <Text style={styles.text4}>Around you</Text>
+
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MapView
+                ref={_map}
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                customMapStyle={mapStyle}
+                showsUserLocation
+                followsUserLocation
+                // showsTraffic
+              >
+                {carsAround.map((marker, index) => (
+                  <Marker
+                    key={index}
+                    coordinate={{
+                      latitude: marker.latitude,
+                      longitude: marker.longitude,
+                    }}
+                    image={require("../assets/carMarker.png")}
+                  />
+                ))}
+              </MapView>
+            </View>
+          </View>
+        ) : (
+          <Text>{errorMsg}</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -193,6 +318,7 @@ const styles = StyleSheet.create({
   view4: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginRight: 15,
     backgroundColor: "white",
     paddingHorizontal: 10,
@@ -209,7 +335,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     borderBottomColor: colors.grey4,
     borderBottomWidth: 1,
-    flex: 1,
+    // flex: 1,
   },
 
   view6: {
@@ -236,7 +362,7 @@ const styles = StyleSheet.create({
   text4: {
     fontSize: 20,
     color: colors.black,
-    merginLeft: 20,
+    marginLeft: 20,
     marginBottom: 20,
   },
 

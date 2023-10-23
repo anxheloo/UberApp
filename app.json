@@ -11,16 +11,29 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.uberapp",
+      "config": {
+        "googleMapsApiKey": "AIzaSyAdcmZKXoLwzfuSaGViz3_meK_2RUk6kvo"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.uberapp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAdcmZKXoLwzfuSaGViz3_meK_2RUk6kvo"
+        },
+        "permissions": [
+          "ACCESS_COARSE_LOCATION",
+          "ACCESS_FINE_LOCATION",
+          "FOREGROUND_SERVICE"
+        ]
       }
     },
     "web": {
