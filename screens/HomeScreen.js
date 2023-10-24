@@ -19,11 +19,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { mapStyle } from "../global/mapStyle";
 import * as Location from "expo-location";
+import { Linking } from "react-native";
+// import { useDrawerStatus } from "@react-navigation/drawer";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const _map = useRef(1);
   const [userLocation, setUserLocation] = useState(null);
   const [lat, setLat] = useState([]);
@@ -63,7 +65,7 @@ const HomeScreen = () => {
         <View style={styles.icon1}>
           <TouchableOpacity
             onPress={() => {
-              console.log("MENU PRESSED");
+              console.log("button pressed");
             }}
           >
             <Feather name="menu" size={40} color={colors.white} />
@@ -80,9 +82,15 @@ const HomeScreen = () => {
               <Text style={styles.text2}>
                 Read a book, Take a namp. Stare out the window.
               </Text>
-              <View style={styles.button1}>
-                <Text style={styles.button1Text}>Ride with Uber</Text>
-              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("RequestScreen");
+                }}
+              >
+                <View style={styles.button1}>
+                  <Text style={styles.button1Text}>Ride with Uber</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -210,6 +218,10 @@ const HomeScreen = () => {
         ) : (
           <Text>{errorMsg}</Text>
         )}
+
+        {/* <TouchableOpacity onPress={handleOpenMaps}>
+          <Text>Press me</Text>
+        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

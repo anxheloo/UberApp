@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,10 +8,9 @@ import {
   Platform,
 } from "react-native";
 import React from "react";
-import HomeScreen from "./screens/HomeScreen";
 import { StatusBar } from "expo-status-bar";
-import { colors } from "./global/styles";
-import { color } from "@rneui/base";
+import StackNavigators from "./navigation/StackNavigators";
+import RootNavigator from "./navigation/RootNavigator";
 
 const App = () => {
   return (
@@ -20,7 +20,8 @@ const App = () => {
       ) : (
         <StatusBar backgroundColor="#2058c0" style="light"></StatusBar>
       )}
-      <HomeScreen></HomeScreen>
+
+      <RootNavigator></RootNavigator>
     </View>
   );
 };
