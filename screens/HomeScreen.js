@@ -61,11 +61,19 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          paddingTop: parameters.statusBarHeight,
+          backgroundColor: colors.blue,
+        }}
+      ></View>
+
       <View style={styles.header}>
         <View style={styles.icon1}>
           <TouchableOpacity
             onPress={() => {
               console.log("button pressed");
+              navigation.openDrawer();
             }}
           >
             <Feather name="menu" size={40} color={colors.white} />
@@ -232,7 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
     paddingBottom: 30,
-    paddingTop: parameters.statusBarHeight,
+    // paddingTop: parameters.statusBarHeight,
   },
 
   header: {
@@ -244,7 +252,7 @@ const styles = StyleSheet.create({
   },
 
   icon1: {
-    marginLeft: 10,
+    marginLeft: 15,
   },
 
   home: {
