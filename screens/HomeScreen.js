@@ -8,7 +8,7 @@ import {
   Image,
   FlatList,
 } from "react-native";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { colors, parameters, title } from "../global/styles";
 // import { Icon } from "react-native-elements";
 import { Feather } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import { mapStyle } from "../global/mapStyle";
 import * as Location from "expo-location";
 import { Linking } from "react-native";
 // import { useDrawerStatus } from "@react-navigation/drawer";
+import { PracticeContext } from "../context/contexts2";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -28,9 +29,12 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 const HomeScreen = ({ navigation }) => {
   const _map = useRef(1);
   const [userLocation, setUserLocation] = useState(null);
-  const [lat, setLat] = useState([]);
-  const [lon, setLon] = useState([]);
+  // const [lat, setLat] = useState([]);
+  // const [lon, setLon] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+    useContext(PracticeContext);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
       console.log("3-THIS IS lon: ", location.coords.longitude);
       console.log("3-THIS IS lat: ", location.coords.latitude);
     })();
-  }, []);
+  }, [lat, lon]);
 
   return (
     <View style={styles.container}>
@@ -92,7 +96,10 @@ const HomeScreen = ({ navigation }) => {
               </Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("RequestScreen");
+                  navigation.navigate("RequestScreen", {
+                    latitude: lat,
+                    longitude: lon,
+                  });
                 }}
               >
                 <View style={styles.button1}>

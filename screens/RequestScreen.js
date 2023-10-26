@@ -8,7 +8,7 @@ import {
   Image,
   StatusBar,
 } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import MapComponent from "../components/MapComponent";
 import { parameters, colors } from "../global/styles";
 import { FontAwesome } from "@expo/vector-icons";
@@ -16,11 +16,21 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { color } from "@rneui/base";
 import { Entypo } from "@expo/vector-icons";
+import { PracticeContext } from "../context/contexts2";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-const RequestScreen = ({ navigation }) => {
+const RequestScreen = ({ navigation, route }) => {
+  // const { latitude, longitude } = route.params;
+  // console.log("THIS are params in RequestScreen:", route.params);
+  // console.log("THIS IS LAT AND LON in RequestScreen:", latitude, longitude);
+
+  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+    useContext(PracticeContext);
+
+  console.log("THIS IS LAT AND LON in RequestScreen:", lat, lon);
+
   return (
     <View style={styles.container}>
       {Platform.OS === "ios" ? (
@@ -84,7 +94,12 @@ const RequestScreen = ({ navigation }) => {
                 backgroundColor: colors.grey6,
                 justifyContent: "center",
               }}
-              onPress={() => navigation.navigate("Destination")}
+              onPress={() =>
+                navigation.navigate("Destination", {
+                  // latitude: latitude,
+                  // longitude: longitude,
+                })
+              }
             >
               <Text
                 style={{

@@ -8,18 +8,29 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import { parameters, colors } from "../global/styles";
+
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { GOOGLE_MAPS_APIKEY } from "@env";
+import { PracticeContext } from "../context/contexts2";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-const Destination = ({ navigation }) => {
+const Destination = ({ navigation, route }) => {
+  // const { latitude, longitude } = route.params;
+  // console.log("THIS are params in Destination:", route.params);
+  // console.log("THIS IS LAT AND LON in Destination:", latitude, longitude);
+
+  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+    useContext(PracticeContext);
+
+  console.log("THIS IS LAT AND LON in Destination:", lat, lon);
+
   const textInput1 = useRef(4);
   const textInput2 = useRef(5);
 
@@ -60,6 +71,7 @@ const Destination = ({ navigation }) => {
             justifyContent: "center",
             // marginBottom: 10,
           }}
+          onPress={() => {}}
         >
           <View style={styles.view3}>
             <FontAwesome name="user-circle" size={25} color={colors.grey3} />
@@ -79,11 +91,11 @@ const Destination = ({ navigation }) => {
         placeholder="Going to..."
         listViewDisplayed="auto"
         debounce={400}
-        currentLocation={true}
-        currentLocationLabel="Your location!" // add a simple label
+        // currentLocation={true}
+        // currentLocationLabel="Your location!" // add a simple label
         minLength={2}
         enablePoweredByContainer={false}
-        fetchDetails={false}
+        // fetchDetails={true}
         autoFocus={true}
         styles={autoComplete}
         query={{
@@ -94,22 +106,28 @@ const Destination = ({ navigation }) => {
         onPress={(data, details = null) => console.log(data, details)}
         onFail={(error) => console.log(error)}
         onNotFound={() => console.log("no results")}
-        listEmptyComponent={() => (
-          <View style={{ flex: 1 }}>
-            <Text>No results were found</Text>
-          </View>
-        )}
+        // listEmptyComponent={() => (
+        //   <View style={{ flex: 1 }}>
+        //     <Text>No results were found</Text>
+        //   </View>
+        // )}
         predefinedPlaces={[
           {
             type: "favorite",
-            description: "Dominos Pizza",
-            geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+            description: "Current Location",
+            // geometry: { location: { lat: latitude, lng: longitude } },
+            geometry: { location: { lat: lat, lng: lon } },
           },
-          {
-            type: "favorite",
-            description: "Chicken Republic",
-            geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-          },
+          // {
+          //   type: "favorite",
+          //   description: "Dominos Pizza",
+          //   geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+          // },
+          // {
+          //   type: "favorite",
+          //   description: "Chicken Republic",
+          //   geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
+          // },
         ]}
       />
     </View>
@@ -139,7 +157,7 @@ const styles = StyleSheet.create({
     // paddingBottom: 10,
     alignItems: "center",
     backgroundColor: colors.white,
-    marginBottom: 10,
+    // marginBottom: 10,
   },
 
   view3: {
