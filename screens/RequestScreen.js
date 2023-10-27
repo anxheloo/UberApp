@@ -8,7 +8,7 @@ import {
   Image,
   StatusBar,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MapComponent from "../components/MapComponent";
 import { parameters, colors } from "../global/styles";
 import { FontAwesome } from "@expo/vector-icons";
@@ -17,19 +17,46 @@ import { Ionicons } from "@expo/vector-icons";
 import { color } from "@rneui/base";
 import { Entypo } from "@expo/vector-icons";
 import { PracticeContext } from "../context/contexts2";
+import { OriginContexts } from "../context/contexts";
+import { DestinationContexts } from "../context/contexts";
+import { useIsFocused } from "@react-navigation/native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const RequestScreen = ({ navigation, route }) => {
-  // const { latitude, longitude } = route.params;
-  // console.log("THIS are params in RequestScreen:", route.params);
-  // console.log("THIS IS LAT AND LON in RequestScreen:", latitude, longitude);
+  const isFocused = useIsFocused();
 
-  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
-    useContext(PracticeContext);
+  const { currentLat, currentLon } = route.params;
+  console.log("THIS COMES FROM ROUTES", currentLat, currentLon);
 
-  console.log("THIS IS LAT AND LON in RequestScreen:", lat, lon);
+  // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+  //   useContext(PracticeContext);
+
+  const { origin, dispatchOrigin } = useContext(OriginContexts);
+  const { destination, dispatchDestination } = useContext(DestinationContexts);
+
+  const [userOrigin, setUserOrigin] = useState({
+    latitude: origin.latitude,
+    longitude: origin.longitude,
+  });
+
+  const [userDestination, setUserDestination] = useState({
+    latitude: destination.latitude,
+    longitude: destination.longitude,
+  });
+
+  useEffect(() => {
+    setUserOrigin({
+      latitude: origin.latitude,
+      longitude: origin.longitude,
+    });
+
+    setUserDestination({
+      latitude: destination.latitude,
+      longitude: destination.longitude,
+    });
+  }, [origin, destination]);
 
   return (
     <View style={styles.container}>
@@ -96,8 +123,8 @@ const RequestScreen = ({ navigation, route }) => {
               }}
               onPress={() =>
                 navigation.navigate("Destination", {
-                  // latitude: latitude,
-                  // longitude: longitude,
+                  currentLat,
+                  currentLon,
                 })
               }
             >
@@ -118,7 +145,9 @@ const RequestScreen = ({ navigation, route }) => {
                   backgroundColor: colors.grey6,
                   justifyContent: "center",
                 }}
-                onPress={() => {}}
+                onPress={() => {
+                  // navigation.navigate("Destination")
+                }}
               >
                 <Text
                   style={{
@@ -136,8 +165,14 @@ const RequestScreen = ({ navigation, route }) => {
           </View>
         </View>
       </View>
-
-      <MapComponent></MapComponent>
+      {isFocused && (
+        <MapComponent
+          latitude={origin.latitude}
+          longitude={origin.longitude}
+          userOrigin={userOrigin}
+          userDestination={userDestination}
+        ></MapComponent>
+      )}
     </View>
   );
 };

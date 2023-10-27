@@ -8,7 +8,7 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useState } from "react";
 import { parameters, colors } from "../global/styles";
 
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -17,19 +17,23 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { GOOGLE_MAPS_APIKEY } from "@env";
 import { PracticeContext } from "../context/contexts2";
+import { OriginContexts, DestinationContexts } from "../context/contexts";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const Destination = ({ navigation, route }) => {
-  // const { latitude, longitude } = route.params;
-  // console.log("THIS are params in Destination:", route.params);
-  // console.log("THIS IS LAT AND LON in Destination:", latitude, longitude);
+  // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+  //   useContext(PracticeContext);
 
-  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
-    useContext(PracticeContext);
+  const { currentLat, currentLon } = route.params;
 
-  console.log("THIS IS LAT AND LON in Destination:", lat, lon);
+  const { origin, dispatchOrigin } = useContext(OriginContexts);
+  const { destination, dispatchDestination } = useContext(DestinationContexts);
+
+  const [display, setDisplay] = useState(false);
+
+  console.log("THIS IS DISPLAY:", display);
 
   const textInput1 = useRef(4);
   const textInput2 = useRef(5);
@@ -85,51 +89,134 @@ const Destination = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <GooglePlacesAutocomplete
-        ref={textInput1}
-        nearbyPlacesAPI="GooglePlacesSearch"
-        placeholder="Going to..."
-        listViewDisplayed="auto"
-        debounce={400}
-        // currentLocation={true}
-        // currentLocationLabel="Your location!" // add a simple label
-        minLength={2}
-        enablePoweredByContainer={false}
-        // fetchDetails={true}
-        autoFocus={true}
-        styles={autoComplete}
-        query={{
-          key: GOOGLE_MAPS_APIKEY,
-          language: "en",
-          // components: "country:AL",
-        }}
-        onPress={(data, details = null) => console.log(data, details)}
-        onFail={(error) => console.log(error)}
-        onNotFound={() => console.log("no results")}
-        // listEmptyComponent={() => (
-        //   <View style={{ flex: 1 }}>
-        //     <Text>No results were found</Text>
-        //   </View>
-        // )}
-        predefinedPlaces={[
-          {
-            type: "favorite",
-            description: "Current Location",
-            // geometry: { location: { lat: latitude, lng: longitude } },
-            geometry: { location: { lat: lat, lng: lon } },
-          },
-          // {
-          //   type: "favorite",
-          //   description: "Dominos Pizza",
-          //   geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-          // },
-          // {
-          //   type: "favorite",
-          //   description: "Chicken Republic",
-          //   geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-          // },
-        ]}
-      />
+      {!display && (
+        <GooglePlacesAutocomplete
+          ref={textInput1}
+          nearbyPlacesAPI="GooglePlacesSearch"
+          placeholder="From Where..."
+          listViewDisplayed="auto"
+          debounce={400}
+          minLength={2}
+          enablePoweredByContainer={false}
+          fetchDetails={true}
+          autoFocus={true}
+          styles={autoComplete}
+          query={{
+            key: GOOGLE_MAPS_APIKEY,
+            language: "en",
+            // components: "country:AL",
+          }}
+          // onPress={(data, details = null) => {
+          //   setLat(details.geometry.location.lat);
+          //   setLon(details.geometry.location.lng);
+          //   console.log(
+          //     "THIS IS LAT and LON 2-2:",
+          //     details.geometry.location.lat,
+          //     details.geometry.location.lng
+          //   );
+          //   navigation.goBack();
+          // }}
+
+          onPress={(data, details = null) => {
+            dispatchOrigin({
+              type: "ADD_ORIGIN",
+              payload: {
+                latitude: details.geometry.location.lat,
+                longitude: details.geometry.location.lng,
+                address: details.formatted_address,
+                name: details.name,
+              },
+            }),
+              setDisplay(true);
+            // navigation.goBack();
+          }}
+          onFail={(error) => console.log(error)}
+          onNotFound={() => console.log("no results")}
+          predefinedPlaces={[
+            {
+              type: "favorite",
+              description: "Current Location",
+              // geometry: { location: { lat: latitude, lng: longitude } },
+              geometry: { location: { lat: currentLat, lng: currentLon } },
+            },
+            // {
+            //   type: "favorite",
+            //   description: "Dominos Pizza",
+            //   geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+            // },
+            // {
+            //   type: "favorite",
+            //   description: "Chicken Republic",
+            //   geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
+            // },
+          ]}
+        />
+      )}
+
+      {display && (
+        <GooglePlacesAutocomplete
+          ref={textInput2}
+          nearbyPlacesAPI="GooglePlacesSearch"
+          placeholder="Going to..."
+          listViewDisplayed="auto"
+          debounce={400}
+          minLength={2}
+          enablePoweredByContainer={false}
+          fetchDetails={true}
+          autoFocus={true}
+          styles={autoComplete}
+          query={{
+            key: GOOGLE_MAPS_APIKEY,
+            language: "en",
+            // components: "country:AL",
+          }}
+          // onPress={(data, details = null) => {
+          //   setLat(details.geometry.location.lat);
+          //   setLon(details.geometry.location.lng);
+          //   console.log(
+          //     "THIS IS LAT and LON 2-2:",
+          //     details.geometry.location.lat,
+          //     details.geometry.location.lng
+          //   );
+          //   navigation.goBack();
+          // }}
+
+          onPress={(data, details = null) => {
+            dispatchDestination({
+              type: "ADD_DESTINATION",
+              payload: {
+                latitude: details.geometry.location.lat,
+                longitude: details.geometry.location.lng,
+                address: details.formatted_address,
+                name: details.name,
+              },
+            }),
+              navigation.goBack();
+          }}
+          onFail={(error) => console.log(error)}
+          onNotFound={() => console.log("no results")}
+          predefinedPlaces={
+            [
+              // {
+              //   type: "favorite",
+              //   description: "Current Location",
+              //   // geometry: { location: { lat: latitude, lng: longitude } },
+              //   geometry: { location: { lat: lat, lng: lon } },
+              // },
+              // {
+              //   type: "favorite",
+              //   description: "Dominos Pizza",
+              //   geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+              // },
+              // {
+              //   type: "favorite",
+              //   description: "Chicken Republic",
+              //   geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
+              // },
+            ]
+          }
+        />
+      )}
     </View>
   );
 };

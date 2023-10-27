@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { colors, parameters, title } from "../global/styles";
@@ -29,12 +30,12 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 const HomeScreen = ({ navigation }) => {
   const _map = useRef(1);
   const [userLocation, setUserLocation] = useState(null);
-  // const [lat, setLat] = useState([]);
-  // const [lon, setLon] = useState([]);
+  const [lat, setLat] = useState(null);
+  const [lon, setLon] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
-    useContext(PracticeContext);
+  // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+  //   useContext(PracticeContext);
 
   useEffect(() => {
     (async () => {
@@ -48,20 +49,20 @@ const HomeScreen = ({ navigation }) => {
 
       let location = await Location.getCurrentPositionAsync();
 
-      setUserLocation(location);
+      // setUserLocation(location);
       setLat(location.coords.latitude);
       setLon(location.coords.longitude);
-      console.log("1-THIS IS USER location: ", userLocation);
-      console.log("1-THIS IS USER location: ", location);
+      // console.log("1-THIS IS USER location: ", userLocation);
+      // console.log("1-THIS IS USER location: ", location);
       // console.log("1-THIS IS lon: ", userLocation.coords.longitude);
       // console.log("1-THIS IS lat: ", userLocation.coords.latitude);
       // console.log("2-THIS IS lon: ", lon);
       // console.log("2-THIS IS lat: ", lat);
       // console.log("3-THIS IS USER location: ", location);
-      console.log("3-THIS IS lon: ", location.coords.longitude);
-      console.log("3-THIS IS lat: ", location.coords.latitude);
+      console.log("1-THIS IS lon: ", location.coords.longitude);
+      console.log("1-THIS IS lat: ", location.coords.latitude);
     })();
-  }, [lat, lon]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -95,15 +96,20 @@ const HomeScreen = ({ navigation }) => {
                 Read a book, Take a namp. Stare out the window.
               </Text>
               <TouchableOpacity
+                disabled={!lat}
                 onPress={() => {
                   navigation.navigate("RequestScreen", {
-                    latitude: lat,
-                    longitude: lon,
+                    currentLat: lat,
+                    currentLon: lon,
                   });
                 }}
               >
                 <View style={styles.button1}>
-                  <Text style={styles.button1Text}>Ride with Uber</Text>
+                  {lat ? (
+                    <Text style={styles.button1Text}>Ride with Uber</Text>
+                  ) : (
+                    <ActivityIndicator></ActivityIndicator>
+                  )}
                 </View>
               </TouchableOpacity>
             </View>

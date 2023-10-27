@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from "react-native";
 
 const PracticeContext = createContext();
 
+const DestinationContext = createContext();
+
 const PracticeProvider = (props) => {
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
@@ -18,4 +20,24 @@ const PracticeProvider = (props) => {
   );
 };
 
-export { PracticeContext, PracticeProvider };
+const DestinationProvider = (props) => {
+  const [lat, setLat] = useState(null);
+  const [lon, setLon] = useState(null);
+  const [address, setAddress] = useState("");
+  const [name, setName] = useState("");
+
+  return (
+    <DestinationContext.Provider
+      value={{ lat, setLat, lon, setLon, address, setAddress, name, setName }}
+    >
+      {props.children}
+    </DestinationContext.Provider>
+  );
+};
+
+export {
+  PracticeContext,
+  PracticeProvider,
+  DestinationContext,
+  DestinationProvider,
+};
