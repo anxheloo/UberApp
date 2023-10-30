@@ -169,6 +169,8 @@ const RequestScreen = ({ navigation, route }) => {
         <MapComponent
           latitude={origin.latitude}
           longitude={origin.longitude}
+          currentLat={currentLat}
+          currentLon={currentLon}
           userOrigin={userOrigin}
           userDestination={userDestination}
         ></MapComponent>

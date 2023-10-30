@@ -29,7 +29,6 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const HomeScreen = ({ navigation }) => {
   const _map = useRef(1);
-  const [userLocation, setUserLocation] = useState(null);
   const [lat, setLat] = useState(null);
   const [lon, setLon] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -208,41 +207,45 @@ const HomeScreen = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <MapView
-                ref={_map}
-                provider={PROVIDER_GOOGLE}
-                style={styles.map}
-                customMapStyle={mapStyle}
-                showsUserLocation
-                followsUserLocation
-                initialRegion={{
-                  latitude: 41.327572,
-                  longitude: 19.819281,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                // showsTraffic
-              >
-                {carsAround.map((marker, index) => (
-                  <Marker
-                    key={index}
-                    coordinate={{
-                      latitude: marker.latitude,
-                      longitude: marker.longitude,
-                    }}
-                    image={require("../assets/carMarker.png")}
-                  />
-                ))}
-              </MapView>
+              {lat ? (
+                <MapView
+                  ref={_map}
+                  provider={PROVIDER_GOOGLE}
+                  style={styles.map}
+                  customMapStyle={mapStyle}
+                  showsUserLocation
+                  followsUserLocation
+                  initialRegion={{
+                    // latitude: 41.327572,
+                    // longitude: 19.819281,
+                    latitude: Number(lat),
+                    longitude: Number(lon),
+                    // latitude: lat?.toFixed(6),
+                    // longitude: lon?.toFixed(6),
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  // showsTraffic
+                >
+                  {carsAround.map((marker, index) => (
+                    <Marker
+                      key={index}
+                      coordinate={{
+                        latitude: marker.latitude,
+                        longitude: marker.longitude,
+                      }}
+                      image={require("../assets/carMarker.png")}
+                    />
+                  ))}
+                </MapView>
+              ) : (
+                <ActivityIndicator></ActivityIndicator>
+              )}
             </View>
           </View>
         ) : (
           <Text>{errorMsg}</Text>
         )}
-
-        {/* <TouchableOpacity onPress={handleOpenMaps}>
-          <Text>Press me</Text>
-        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );
