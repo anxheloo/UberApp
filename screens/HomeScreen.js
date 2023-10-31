@@ -100,6 +100,7 @@ const HomeScreen = ({ navigation }) => {
                   navigation.navigate("RequestScreen", {
                     currentLat: lat,
                     currentLon: lon,
+                    // state: 1, // Set the state to 1 to open the BottomSheet
                   });
                 }}
               >

@@ -8,34 +8,50 @@ import {
   Image,
   StatusBar,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import MapComponent from "../components/MapComponent";
 import { parameters, colors } from "../global/styles";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { color } from "@rneui/base";
+import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { PracticeContext } from "../context/contexts2";
 import { OriginContexts } from "../context/contexts";
 import { DestinationContexts } from "../context/contexts";
 import { useIsFocused } from "@react-navigation/native";
+import BottomSheet, {
+  BottomSheetFlatList,
+  BottomSheetTextInput,
+} from "@gorhom/bottom-sheet";
+import { rideData } from "../global/data";
+import { useRoute } from "@react-navigation/native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-const RequestScreen = ({ navigation, route }) => {
+const RequestScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
+  const route = useRoute();
+
+  console.log("THIS IS route:", route);
+  console.log("THIS IS route.params.state:", route.params.state);
+  console.log("THIS IS route.params:", route.params);
+
+  const [bottomSheetIndex, setBottomSheetIndex] = useState(1);
 
   const { currentLat, currentLon } = route.params;
-  console.log("THIS COMES FROM ROUTES", currentLat, currentLon);
-
-  // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
-  //   useContext(PracticeContext);
-
   const { origin, dispatchOrigin } = useContext(OriginContexts);
   const { destination, dispatchDestination } = useContext(DestinationContexts);
-
   const [userOrigin, setUserOrigin] = useState({
     latitude: origin.latitude,
     longitude: origin.longitude,
@@ -57,6 +73,39 @@ const RequestScreen = ({ navigation, route }) => {
       longitude: destination.longitude,
     });
   }, [origin, destination]);
+
+  useEffect(() => {
+    if (route.params?.state2 !== undefined) {
+      setBottomSheetIndex(route.params.state2);
+    }
+  }, [route.params]);
+
+  // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
+  //   useContext(PracticeContext);
+
+  // ref
+  const bottomSheetRef = useRef(null);
+  // variables
+  const snapPoints = useMemo(() => ["5%", "70%"], []);
+  // callbacks
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }) => (
+      <View style={styles.view10}>
+        <View style={styles.view11}>
+          <AntDesign name="clockcircleo" size={24} color="white" />
+        </View>
+        <View>
+          <Text style={styles.text9}>{item.street}</Text>
+          <Text style={{ fontSize: 12, color: colors.grey3 }}>{item.area}</Text>
+        </View>
+      </View>
+    ),
+    []
+  );
 
   return (
     <View style={styles.container}>
@@ -175,6 +224,59 @@ const RequestScreen = ({ navigation, route }) => {
           userDestination={userDestination}
         ></MapComponent>
       )}
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={
+          // routeStateFromDestination !== null ? routeStateFromDestination : state
+          // 1
+          bottomSheetIndex
+        }
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <BottomSheetFlatList
+          keyboardShouldPersistTaps="always"
+          data={rideData}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={{
+            backgroundColor: "white",
+            paddingVertical: 15,
+          }}
+          ListHeaderComponent={
+            <View style={styles.view10}>
+              <View style={styles.view11}>
+                <Entypo name="star-outlined" size={24} color="white" />
+              </View>
+              <View>
+                <Text style={styles.text9}>Saved Places</Text>
+              </View>
+            </View>
+          }
+          ListFooterComponent={
+            <View>
+              <View style={styles.view10}>
+                <View style={styles.view11}>
+                  <FontAwesome name="map-marker" size={24} color="white" />
+                </View>
+                <View>
+                  <Text style={styles.text9}>Set location on map</Text>
+                </View>
+              </View>
+
+              <View style={styles.view10}>
+                <View style={styles.view11}>
+                  <Feather name="skip-forward" size={24} color="white" />
+                </View>
+                <View>
+                  <Text style={styles.text9}>Enter destination later</Text>
+                </View>
+              </View>
+            </View>
+          }
+        ></BottomSheetFlatList>
+      </BottomSheet>
     </View>
   );
 };
@@ -262,6 +364,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.grey5,
     borderBottomWidth: 1,
     paddingHorizontal: 15,
+    marginBottom: 5,
+    // backgroundColor: "red",
   },
   view11: {
     backgroundColor: colors.grey,
@@ -271,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 15,
-    marginTop: 15,
+    // marginTop: 15,
   },
 
   contentContainer: {

@@ -17,6 +17,7 @@ import {
   DestinationContext,
   DestinationProvider,
 } from "./context/contexts2";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import {
   OriginContextProvider,
@@ -27,6 +28,7 @@ import {
 
 const App = () => {
   return (
+    // <GestureHandlerRootView style={{ flex: 1 }}>
     <DestinationContextsProvider>
       <OriginContextProvider>
         {/* <PracticeProvider> */}
@@ -44,6 +46,7 @@ const App = () => {
         {/* </PracticeProvider>  */}
       </OriginContextProvider>
     </DestinationContextsProvider>
+    // </GestureHandlerRootView>
   );
 };
 

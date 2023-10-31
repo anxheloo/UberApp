@@ -32,7 +32,6 @@ const Destination = ({ navigation, route }) => {
   const { destination, dispatchDestination } = useContext(DestinationContexts);
 
   const [display, setDisplay] = useState(false);
-
   console.log("THIS IS DISPLAY:", display);
 
   const textInput1 = useRef(4);
@@ -191,7 +190,8 @@ const Destination = ({ navigation, route }) => {
                 name: details.name,
               },
             }),
-              navigation.goBack();
+              navigation.navigate("RequestScreen", { state2: 0 });
+            // navigation.goBack();
           }}
           onFail={(error) => console.log(error)}
           onNotFound={() => console.log("no results")}

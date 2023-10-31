@@ -24,11 +24,7 @@ const MapComponent = ({
   userOrigin,
   userDestination,
 }) => {
-  console.log("THIS IS CURRENT:", currentLat, currentLon);
-  console.log("THIS IS userOrigin:", userOrigin);
-  console.log("THIS IS userDestination:", userDestination);
   const mapRef = useRef(5);
-
   // useEffect(() => {
   //   if (userDestination.latitude !== null) {
   //     const intervalId = setInterval(() => {
@@ -123,7 +119,6 @@ const MapComponent = ({
   return (
     <View>
       <MapView
-        // initialCamera={userDestination ? userDestination : mapState}
         initialRegion={{
           latitude: 40.056395,
           longitude: 20.102161,
@@ -190,10 +185,10 @@ const MapComponent = ({
 
               mapRef.current.fitToCoordinates(result.coordinates, {
                 edgePadding: {
-                  right: SCREEN_WIDTH / 20,
-                  bottom: SCREEN_HEIGHT / 20,
-                  left: SCREEN_WIDTH / 20,
-                  top: SCREEN_HEIGHT / 20,
+                  right: SCREEN_WIDTH / 10,
+                  bottom: SCREEN_HEIGHT / 10,
+                  left: SCREEN_WIDTH / 10,
+                  top: SCREEN_HEIGHT / 10,
                 },
               });
             }}
