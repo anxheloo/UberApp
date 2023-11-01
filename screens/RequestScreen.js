@@ -35,6 +35,7 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { rideData } from "../global/data";
 import { useRoute } from "@react-navigation/native";
+import { Linking } from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -42,13 +43,7 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 const RequestScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
   const route = useRoute();
-
-  console.log("THIS IS route:", route);
-  console.log("THIS IS route.params.state:", route.params.state);
-  console.log("THIS IS route.params:", route.params);
-
   const [bottomSheetIndex, setBottomSheetIndex] = useState(1);
-
   const { currentLat, currentLon } = route.params;
   const { origin, dispatchOrigin } = useContext(OriginContexts);
   const { destination, dispatchDestination } = useContext(DestinationContexts);
@@ -56,12 +51,10 @@ const RequestScreen = ({ navigation }) => {
     latitude: origin.latitude,
     longitude: origin.longitude,
   });
-
   const [userDestination, setUserDestination] = useState({
     latitude: destination.latitude,
     longitude: destination.longitude,
   });
-
   useEffect(() => {
     setUserOrigin({
       latitude: origin.latitude,
@@ -73,16 +66,13 @@ const RequestScreen = ({ navigation }) => {
       longitude: destination.longitude,
     });
   }, [origin, destination]);
-
   useEffect(() => {
     if (route.params?.state2 !== undefined) {
       setBottomSheetIndex(route.params.state2);
     }
   }, [route.params]);
-
   // const { lat, setLat, lon, setLon, address, setAddress, name, setName } =
   //   useContext(PracticeContext);
-
   // ref
   const bottomSheetRef = useRef(null);
   // variables
@@ -91,7 +81,6 @@ const RequestScreen = ({ navigation }) => {
   const handleSheetChanges = useCallback((index) => {
     console.log("handleSheetChanges", index);
   }, []);
-
   const renderItem = useCallback(
     ({ item }) => (
       <View style={styles.view10}>
@@ -106,6 +95,24 @@ const RequestScreen = ({ navigation }) => {
     ),
     []
   );
+
+  const getDirections = () => {
+    const origin = `${userOrigin?.latitude},${userOrigin?.longitude}`;
+    const destination = `${userDestination?.latitude},${userDestination?.longitude}`;
+    const mode = "driving"; // You can change the mode if needed
+
+    const url = `https://www.google.com/maps/dir/?api=1&travelmode=${mode}&dir_action=navigate&origin=${origin}&destination=${destination}`;
+
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
+  };
 
   return (
     <View style={styles.container}>
@@ -223,6 +230,23 @@ const RequestScreen = ({ navigation }) => {
           userOrigin={userOrigin}
           userDestination={userDestination}
         ></MapComponent>
+      )}
+
+      {userDestination && (
+        <TouchableOpacity
+          style={{
+            width: 150,
+            height: 50,
+            position: "absolute",
+            top: 250,
+            right: 100,
+            zIndex: 99,
+            backgroundColor: "red",
+          }}
+          onPress={getDirections}
+        >
+          <Text>Press me</Text>
+        </TouchableOpacity>
       )}
 
       <BottomSheet
