@@ -232,7 +232,7 @@ const RequestScreen = ({ navigation }) => {
         ></MapComponent>
       )}
 
-      {userDestination && (
+      {userDestination.latitude && (
         <TouchableOpacity
           style={{
             width: 150,
